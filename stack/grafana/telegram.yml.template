@@ -1,0 +1,31 @@
+# Куда Grafana шлёт тревоги. Мастер (remnawave-monitoring setup) копирует этот файл в
+# provisioning/alerting/telegram.yml, когда задан токен бота; без токена файла быть не должно —
+# Grafana не стартует с пустым bottoken. Лежит вне provisioning/, чтобы Grafana не читала шаблон.
+# Значения берутся из окружения контейнера (TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID из .env).
+apiVersion: 1
+templates:
+  - orgId: 1
+    name: rw-telegram
+    template: |
+      {{ define "rw-telegram" }}{{ range .Alerts }}{{ if eq .Status "firing" }}🔴{{ else }}✅ снято:{{ end }} {{ .Labels.alertname }}
+      {{ .Annotations.summary }}
+      {{ end }}{{ end }}
+contactPoints:
+  - orgId: 1
+    name: telegram
+    receivers:
+      - uid: rw-telegram
+        type: telegram
+        settings:
+          bottoken: ${TELEGRAM_BOT_TOKEN}
+          chatid: "${TELEGRAM_CHAT_ID}"
+          message: '{{ template "rw-telegram" . }}'
+          parse_mode: None
+          disable_web_page_preview: true
+policies:
+  - orgId: 1
+    receiver: telegram
+    group_by: [alertname, node]
+    group_wait: 30s
+    group_interval: 5m
+    repeat_interval: 6h

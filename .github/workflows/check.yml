@@ -1,0 +1,72 @@
+name: check
+on: [push, pull_request]
+jobs:
+  static:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+      - name: python syntax
+        run: python3 -m py_compile exporter/rw_exporter.py scripts/rwmon.py tools/*.py tests/*.py
+      - name: shell syntax
+        run: bash -n scripts/*.sh backup/*.sh
+      - name: dashboards match the generator
+        run: python3 tools/build_dashboard.py --check
+      - name: provisioning and targets are valid JSON/YAML
+        run: |
+          pip install -q pyyaml
+          python3 - <<'PY'
+          import glob, json, yaml
+          for f in glob.glob("stack/grafana/provisioning/dashboards/json/*.json"): json.load(open(f))
+          for f in glob.glob("stack/**/*.yml", recursive=True) + ["stack/grafana/telegram.yml.template"]: yaml.safe_load(open(f))
+          print("ok")
+          PY
+      - name: help of every command
+        run: |
+          python3 scripts/rwmon.py --help >/dev/null
+          for c in setup targets doctor status kuma-sql telegram-test; do python3 scripts/rwmon.py $c --help >/dev/null; done
+          python3 exporter/rw_exporter.py --version; bash scripts/install-node-exporter.sh --help >/dev/null
+      - name: exporter and commands never write to the panel
+        run: |
+          if grep -nE 'method="(PATCH|PUT|DELETE)"' exporter/rw_exporter.py scripts/rwmon.py; then echo "панель — только чтение"; exit 1; fi
+          if grep -nE 'urlopen\([^)]*data=' exporter/rw_exporter.py; then echo "экспортёр не должен слать POST"; exit 1; fi
+      - name: exporter against the fake panel
+        run: python3 tests/test_exporter.py
+      - name: docs match the code
+        run: python3 tools/check_docs.py
+      - name: versions match the changelog
+        run: |
+          v=$(grep -m1 -oE '^## [0-9]+\.[0-9]+\.[0-9]+' CHANGELOG.md | cut -c4-)
+          grep -q "VERSION = \"$v\"" scripts/rwmon.py && grep -q "VERSION = \"$v\"" exporter/rw_exporter.py
+      - name: missing config gives exit 2 with a hint
+        run: |
+          rc=0; python3 scripts/rwmon.py --dir /tmp/none targets || rc=$?; [ "$rc" -eq 2 ]
+          rc=0; python3 exporter/rw_exporter.py || rc=$?; [ "$rc" -eq 2 ]
+
+  stack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: prometheus and blackbox configs
+        run: |
+          docker run --rm -v "$PWD/stack/prometheus:/etc/prometheus:ro" --entrypoint promtool prom/prometheus:latest check config /etc/prometheus/prometheus.yml
+          docker run --rm -v "$PWD/stack/blackbox:/c:ro" prom/blackbox-exporter:latest --config.check --config.file=/c/blackbox.yml
+      - name: compose config
+        run: |
+          cd stack
+          printf 'PANEL_URL=http://fake-panel:8099\nPANEL_TOKEN=demo\nGRAFANA_ADMIN_PASSWORD=ci-pass\nTELEGRAM_BOT_TOKEN=1:fake\nTELEGRAM_CHAT_ID=1\nSCRAPE_SECONDS=5\n' > .env
+          cp ../tests/ci-override.yml docker-compose.override.yml
+          cp grafana/telegram.yml.template grafana/provisioning/alerting/telegram.yml
+          docker compose config --quiet
+      - name: stack smoke test (fake panel → exporter → prometheus → grafana provisioning)
+        run: |
+          cd stack && docker compose up -d
+          python3 ../tests/test_stack.py
+      - name: logs on failure
+        if: failure()
+        run: cd stack && docker compose logs --tail 50
+      - name: down
+        if: always()
+        run: cd stack && docker compose down -v

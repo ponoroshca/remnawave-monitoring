@@ -1,0 +1,9 @@
+# Заглушка панели для CI и локального теста стека: docker compose использует этот файл как
+# docker-compose.override.yml (см. .github/workflows/check.yml и tests/test_stack.py).
+services:
+  fake-panel:
+    image: python:3.12-slim
+    container_name: rwmon-fake-panel
+    volumes:
+      - ../tests/fake_panel.py:/app/fake_panel.py:ro
+    command: ["python3", "-u", "/app/fake_panel.py", "--listen", "0.0.0.0:8099", "--token", "demo", "--drift", "--down", "US-1"]

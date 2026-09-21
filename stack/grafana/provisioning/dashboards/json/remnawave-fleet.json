@@ -1,0 +1,2103 @@
+{
+ "uid": "remnawave-fleet",
+ "title": "Remnawave — флот",
+ "tags": [
+  "remnawave"
+ ],
+ "timezone": "browser",
+ "editable": true,
+ "refresh": "30s",
+ "time": {
+  "from": "now-6h",
+  "to": "now"
+ },
+ "schemaVersion": 39,
+ "version": 1,
+ "panels": [
+  {
+   "id": 1,
+   "type": "stat",
+   "title": "👥 Онлайн",
+   "description": "Уникальных пользователей онлайн по данным панели",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 0,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "remnawave_online_now",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "legendFormat": "",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "locale",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "blue"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "colorMode": "value",
+    "graphMode": "area",
+    "textMode": "value",
+    "justifyMode": "center",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": ""
+    }
+   }
+  },
+  {
+   "id": 2,
+   "type": "stat",
+   "title": "🔌 Сессий",
+   "description": "Подключений на всех нодах; пользователь с двух устройств — две сессии",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 4,
+    "y": 0,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "remnawave_sessions_total",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "legendFormat": "",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "locale",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "purple"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "colorMode": "value",
+    "graphMode": "area",
+    "textMode": "value",
+    "justifyMode": "center",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": ""
+    }
+   }
+  },
+  {
+   "id": 3,
+   "type": "stat",
+   "title": "👤 Активных",
+   "description": "",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 8,
+    "y": 0,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "remnawave_users_by_status{status=\"ACTIVE\"}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "legendFormat": "",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "locale",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "green"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "value",
+    "justifyMode": "center",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": ""
+    }
+   }
+  },
+  {
+   "id": 4,
+   "type": "stat",
+   "title": "🖥️ Нод на связи",
+   "description": "",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 0,
+    "w": 3,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "remnawave_nodes_connected",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "legendFormat": "",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "decimals": 0,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "green"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "value",
+    "justifyMode": "center",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": ""
+    }
+   }
+  },
+  {
+   "id": 5,
+   "type": "stat",
+   "title": "⚠️ Отвалилось",
+   "description": "Не на связи и при этом не выключены в панели",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 15,
+    "y": 0,
+    "w": 3,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "remnawave_nodes_total - remnawave_nodes_connected - remnawave_nodes_disabled",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "legendFormat": "",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "decimals": 0,
+     "color": {
+      "mode": "thresholds"
+     },
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "red",
+        "value": 1
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "value",
+    "justifyMode": "center",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": ""
+    }
+   }
+  },
+  {
+   "id": 6,
+   "type": "stat",
+   "title": "⬇️ Вход, флот",
+   "description": "",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 18,
+    "y": 0,
+    "w": 3,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sum(remnawave_node_rx_bytes_per_second) * 8",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "legendFormat": "",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "bps",
+     "decimals": 1,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "blue"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "value",
+    "justifyMode": "center",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": ""
+    }
+   }
+  },
+  {
+   "id": 7,
+   "type": "stat",
+   "title": "⬆️ Выход, флот",
+   "description": "",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 21,
+    "y": 0,
+    "w": 3,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sum(remnawave_node_tx_bytes_per_second) * 8",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "legendFormat": "",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "bps",
+     "decimals": 1,
+     "color": {
+      "mode": "fixed",
+      "fixedColor": "purple"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "value",
+    "justifyMode": "center",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": ""
+    }
+   }
+  },
+  {
+   "id": 8,
+   "type": "timeseries",
+   "title": "📈 Онлайн — динамика",
+   "description": "",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 4,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "remnawave_sessions_total",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "legendFormat": "сессий на нодах"
+    },
+    {
+     "refId": "B",
+     "expr": "remnawave_online_now",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "legendFormat": "уникальных пользователей"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "custom": {
+      "fillOpacity": 12,
+      "lineWidth": 2,
+      "showPoints": "never",
+      "gradientMode": "opacity",
+      "stacking": {
+       "mode": "none"
+      }
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom",
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   }
+  },
+  {
+   "id": 9,
+   "type": "timeseries",
+   "title": "📶 Полоса нод, вход",
+   "description": "Входящая скорость интерфейса каждой ноды по данным панели",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 4,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "remnawave_node_rx_bytes_per_second * 8",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "legendFormat": "{{node}}"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "bps",
+     "custom": {
+      "fillOpacity": 12,
+      "lineWidth": 2,
+      "showPoints": "never",
+      "gradientMode": "opacity",
+      "stacking": {
+       "mode": "none"
+      }
+     },
+     "decimals": 1
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom",
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   }
+  },
+  {
+   "id": 10,
+   "type": "table",
+   "title": "🌍 Ноды: состояние",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 12,
+    "w": 16,
+    "h": 11
+   },
+   "description": "Статус, сессии, load на ядро, свободная память и скорость — всё из панели, обновляется каждые SCRAPE_SECONDS",
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "remnawave_node_users_online",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "legendFormat": "",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    },
+    {
+     "refId": "B",
+     "expr": "remnawave_node_load1 / remnawave_node_cpus",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "legendFormat": "",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    },
+    {
+     "refId": "C",
+     "expr": "remnawave_node_memory_free_bytes / remnawave_node_memory_total_bytes * 100",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "legendFormat": "",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    },
+    {
+     "refId": "D",
+     "expr": "remnawave_node_rx_bytes_per_second * 8",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "legendFormat": "",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    },
+    {
+     "refId": "E",
+     "expr": "remnawave_node_tx_bytes_per_second * 8",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "legendFormat": "",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    },
+    {
+     "refId": "F",
+     "expr": "remnawave_node_connected",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "legendFormat": "",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    }
+   ],
+   "transformations": [
+    {
+     "id": "joinByField",
+     "options": {
+      "byField": "node",
+      "mode": "outer"
+     }
+    },
+    {
+     "id": "organize",
+     "options": {
+      "excludeByName": {
+       "Time": true,
+       "Time 1": true,
+       "Time 2": true,
+       "Time 3": true,
+       "Time 4": true,
+       "Time 5": true,
+       "Time 6": true,
+       "__name__": true,
+       "__name__ 1": true,
+       "job": true,
+       "job 1": true,
+       "job 2": true,
+       "job 3": true,
+       "job 4": true,
+       "job 5": true,
+       "job 6": true,
+       "instance": true,
+       "instance 1": true,
+       "instance 2": true,
+       "instance 3": true,
+       "instance 4": true,
+       "instance 5": true,
+       "instance 6": true,
+       "role 2": true,
+       "role 3": true,
+       "role 4": true,
+       "role 5": true,
+       "role 6": true,
+       "country 2": true,
+       "country 3": true,
+       "country 4": true,
+       "country 5": true,
+       "country 6": true
+      },
+      "renameByName": {
+       "node": "Нода",
+       "role 1": "Роль",
+       "country 1": "Страна",
+       "Value #A": "Сессий",
+       "Value #B": "Load/ядро",
+       "Value #C": "Память своб.",
+       "Value #D": "⬇️",
+       "Value #E": "⬆️",
+       "Value #F": "Связь"
+      },
+      "indexByName": {
+       "node": 0,
+       "Value #F": 1,
+       "country 1": 2,
+       "role 1": 3,
+       "Value #A": 4,
+       "Value #B": 5,
+       "Value #C": 6,
+       "Value #D": 7,
+       "Value #E": 8
+      }
+     }
+    },
+    {
+     "id": "sortBy",
+     "options": {
+      "sort": [
+       {
+        "field": "Сессий",
+        "desc": true
+       }
+      ]
+     }
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "custom": {
+      "align": "left",
+      "cellOptions": {
+       "type": "auto"
+      }
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Страна"
+      },
+      "properties": [
+       {
+        "id": "mappings",
+        "value": [
+         {
+          "type": "value",
+          "options": {
+           "RU": {
+            "text": "🇷🇺 RU",
+            "index": 0
+           },
+           "DE": {
+            "text": "🇩🇪 DE",
+            "index": 1
+           },
+           "NL": {
+            "text": "🇳🇱 NL",
+            "index": 2
+           },
+           "FI": {
+            "text": "🇫🇮 FI",
+            "index": 3
+           },
+           "FR": {
+            "text": "🇫🇷 FR",
+            "index": 4
+           },
+           "CH": {
+            "text": "🇨🇭 CH",
+            "index": 5
+           },
+           "SE": {
+            "text": "🇸🇪 SE",
+            "index": 6
+           },
+           "US": {
+            "text": "🇺🇸 US",
+            "index": 7
+           },
+           "PL": {
+            "text": "🇵🇱 PL",
+            "index": 8
+           },
+           "ES": {
+            "text": "🇪🇸 ES",
+            "index": 9
+           },
+           "BG": {
+            "text": "🇧🇬 BG",
+            "index": 10
+           },
+           "GR": {
+            "text": "🇬🇷 GR",
+            "index": 11
+           },
+           "LV": {
+            "text": "🇱🇻 LV",
+            "index": 12
+           },
+           "CZ": {
+            "text": "🇨🇿 CZ",
+            "index": 13
+           },
+           "GB": {
+            "text": "🇬🇧 GB",
+            "index": 14
+           },
+           "IT": {
+            "text": "🇮🇹 IT",
+            "index": 15
+           },
+           "TR": {
+            "text": "🇹🇷 TR",
+            "index": 16
+           },
+           "KZ": {
+            "text": "🇰🇿 KZ",
+            "index": 17
+           },
+           "AM": {
+            "text": "🇦🇲 AM",
+            "index": 18
+           },
+           "GE": {
+            "text": "🇬🇪 GE",
+            "index": 19
+           },
+           "AT": {
+            "text": "🇦🇹 AT",
+            "index": 20
+           },
+           "EE": {
+            "text": "🇪🇪 EE",
+            "index": 21
+           },
+           "LT": {
+            "text": "🇱🇹 LT",
+            "index": 22
+           },
+           "RO": {
+            "text": "🇷🇴 RO",
+            "index": 23
+           },
+           "HU": {
+            "text": "🇭🇺 HU",
+            "index": 24
+           },
+           "JP": {
+            "text": "🇯🇵 JP",
+            "index": 25
+           },
+           "SG": {
+            "text": "🇸🇬 SG",
+            "index": 26
+           },
+           "CA": {
+            "text": "🇨🇦 CA",
+            "index": 27
+           },
+           "UA": {
+            "text": "🇺🇦 UA",
+            "index": 28
+           },
+           "MD": {
+            "text": "🇲🇩 MD",
+            "index": 29
+           },
+           "RS": {
+            "text": "🇷🇸 RS",
+            "index": 30
+           },
+           "HK": {
+            "text": "🇭🇰 HK",
+            "index": 31
+           },
+           "AE": {
+            "text": "🇦🇪 AE",
+            "index": 32
+           },
+           "IN": {
+            "text": "🇮🇳 IN",
+            "index": 33
+           },
+           "BR": {
+            "text": "🇧🇷 BR",
+            "index": 34
+           }
+          }
+         }
+        ]
+       },
+       {
+        "id": "custom.width",
+        "value": 80
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Связь"
+      },
+      "properties": [
+       {
+        "id": "mappings",
+        "value": [
+         {
+          "type": "value",
+          "options": {
+           "1": {
+            "text": "● в строю",
+            "color": "green",
+            "index": 0
+           },
+           "0": {
+            "text": "● отвалилась",
+            "color": "red",
+            "index": 1
+           }
+          }
+         }
+        ]
+       },
+       {
+        "id": "custom.cellOptions",
+        "value": {
+         "type": "color-text"
+        }
+       },
+       {
+        "id": "custom.width",
+        "value": 110
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Сессий"
+      },
+      "properties": [
+       {
+        "id": "custom.cellOptions",
+        "value": {
+         "type": "gauge",
+         "mode": "gradient"
+        }
+       },
+       {
+        "id": "min",
+        "value": 0
+       },
+       {
+        "id": "max",
+        "value": 300
+       },
+       {
+        "id": "color",
+        "value": {
+         "mode": "continuous-BlPu"
+        }
+       },
+       {
+        "id": "custom.width",
+        "value": 150
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Load/ядро"
+      },
+      "properties": [
+       {
+        "id": "decimals",
+        "value": 2
+       },
+       {
+        "id": "custom.width",
+        "value": 95
+       },
+       {
+        "id": "custom.cellOptions",
+        "value": {
+         "type": "color-text"
+        }
+       },
+       {
+        "id": "thresholds",
+        "value": {
+         "mode": "absolute",
+         "steps": [
+          {
+           "color": "green",
+           "value": null
+          },
+          {
+           "color": "orange",
+           "value": 0.7
+          },
+          {
+           "color": "red",
+           "value": 0.9
+          }
+         ]
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Память своб."
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "percent"
+       },
+       {
+        "id": "decimals",
+        "value": 0
+       },
+       {
+        "id": "custom.width",
+        "value": 110
+       },
+       {
+        "id": "custom.cellOptions",
+        "value": {
+         "type": "color-text"
+        }
+       },
+       {
+        "id": "thresholds",
+        "value": {
+         "mode": "absolute",
+         "steps": [
+          {
+           "color": "red",
+           "value": null
+          },
+          {
+           "color": "orange",
+           "value": 12
+          },
+          {
+           "color": "green",
+           "value": 25
+          }
+         ]
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "⬇️"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "bps"
+       },
+       {
+        "id": "decimals",
+        "value": 0
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "⬆️"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "bps"
+       },
+       {
+        "id": "decimals",
+        "value": 0
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Роль"
+      },
+      "properties": [
+       {
+        "id": "custom.width",
+        "value": 65
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Нода"
+      },
+      "properties": [
+       {
+        "id": "custom.width",
+        "value": 130
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "cellHeight": "sm",
+    "footer": {
+     "show": false
+    },
+    "showHeader": true
+   }
+  },
+  {
+   "id": 11,
+   "type": "piechart",
+   "title": "🥧 Сессии по странам",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 16,
+    "y": 12,
+    "w": 8,
+    "h": 11
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sum by (country) (remnawave_node_users_online{role=\"node\"})",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "legendFormat": "{{country}}",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short"
+    },
+    "overrides": []
+   },
+   "options": {
+    "pieType": "donut",
+    "displayLabels": [
+     "name",
+     "percent"
+    ],
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "values": [
+      "value",
+      "percent"
+     ],
+     "showLegend": true
+    },
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "tooltip": {
+     "mode": "single"
+    }
+   }
+  },
+  {
+   "id": 12,
+   "type": "bargauge",
+   "title": "📊 Трафик к лимиту в панели",
+   "description": "Только ноды, у которых в панели задан лимит трафика. Счётчик панели считает трафик пользователей; хостер считает по интерфейсу — обычно на 10–15% больше",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 23,
+    "w": 8,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "remnawave_node_traffic_used_percent > 0",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "legendFormat": "{{node}}",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percent",
+     "min": 0,
+     "max": 100,
+     "decimals": 1,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 70
+       },
+       {
+        "color": "red",
+        "value": 85
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "orientation": "horizontal",
+    "displayMode": "gradient",
+    "valueMode": "color",
+    "showUnfilled": true,
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    }
+   }
+  },
+  {
+   "id": 13,
+   "type": "bargauge",
+   "title": "🧮 Load на ядро (панель)",
+   "description": "load1 / число ядер: > 0.9 — нода упирается в CPU",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 8,
+    "y": 23,
+    "w": 8,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "remnawave_node_load1 / remnawave_node_cpus",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "legendFormat": "{{node}}",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "min": 0,
+     "max": 1.5,
+     "decimals": 2,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 0.7
+       },
+       {
+        "color": "red",
+        "value": 0.9
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "orientation": "horizontal",
+    "displayMode": "gradient",
+    "valueMode": "color",
+    "showUnfilled": true,
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    }
+   }
+  },
+  {
+   "id": 14,
+   "type": "bargauge",
+   "title": "🧠 Память свободно (панель)",
+   "description": "",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 16,
+    "y": 23,
+    "w": 8,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "remnawave_node_memory_free_bytes / remnawave_node_memory_total_bytes * 100",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "legendFormat": "{{node}}",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percent",
+     "min": 0,
+     "max": 100,
+     "decimals": 1,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "red",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 12
+       },
+       {
+        "color": "green",
+        "value": 25
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "orientation": "horizontal",
+    "displayMode": "gradient",
+    "valueMode": "color",
+    "showUnfilled": true,
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    }
+   }
+  },
+  {
+   "id": 15,
+   "type": "timeseries",
+   "title": "🖥️ CPU, % (агент node-exporter)",
+   "description": "Есть только у серверов с установленным агентом (scripts/install-node-exporter.sh)",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 31,
+    "w": 8,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "100 - avg by (node) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "legendFormat": "{{node}}"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percent",
+     "custom": {
+      "fillOpacity": 12,
+      "lineWidth": 2,
+      "showPoints": "never",
+      "gradientMode": "opacity",
+      "stacking": {
+       "mode": "none"
+      }
+     },
+     "decimals": 0,
+     "max": 100,
+     "min": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom",
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   }
+  },
+  {
+   "id": 16,
+   "type": "bargauge",
+   "title": "💽 Диск /, свободно (агент)",
+   "description": "",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 8,
+    "y": 31,
+    "w": 8,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "node_filesystem_avail_bytes{mountpoint=\"/\",fstype!~\"tmpfs|overlay\"} / node_filesystem_size_bytes{mountpoint=\"/\",fstype!~\"tmpfs|overlay\"} * 100",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "legendFormat": "{{node}}",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percent",
+     "min": 0,
+     "max": 100,
+     "decimals": 1,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "red",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 10
+       },
+       {
+        "color": "green",
+        "value": 20
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "orientation": "horizontal",
+    "displayMode": "gradient",
+    "valueMode": "color",
+    "showUnfilled": true,
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    }
+   }
+  },
+  {
+   "id": 17,
+   "type": "bargauge",
+   "title": "🧷 conntrack, % таблицы (агент)",
+   "description": "При 100% ядро отбрасывает новые соединения — для мостов с тысячами клиентов это главный тихий убийца",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 16,
+    "y": 31,
+    "w": 8,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "node_nf_conntrack_entries / node_nf_conntrack_entries_limit * 100",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "legendFormat": "{{node}}",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percent",
+     "min": 0,
+     "max": 100,
+     "decimals": 1,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 60
+       },
+       {
+        "color": "red",
+        "value": 80
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "orientation": "horizontal",
+    "displayMode": "gradient",
+    "valueMode": "color",
+    "showUnfilled": true,
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    }
+   }
+  },
+  {
+   "id": 18,
+   "type": "table",
+   "title": "🔌 Порты нод с сервера мониторинга (blackbox)",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 39,
+    "w": 12,
+    "h": 9
+   },
+   "description": "TCP-соединение к порту инбаунда каждой ноды. «закрыт» при живой ноде = блокировка/файрвол между серверами",
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "probe_success{job=\"blackbox-tcp\"}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "legendFormat": "",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    }
+   ],
+   "transformations": [
+    {
+     "id": "organize",
+     "options": {
+      "excludeByName": {
+       "Time": true,
+       "__name__": true,
+       "job": true,
+       "role": true
+      },
+      "renameByName": {
+       "node": "Нода",
+       "instance": "Адрес:порт",
+       "country": "Страна",
+       "Value": "Состояние"
+      },
+      "indexByName": {
+       "node": 0,
+       "Value": 1,
+       "instance": 2,
+       "country": 3
+      }
+     }
+    },
+    {
+     "id": "sortBy",
+     "options": {
+      "sort": [
+       {
+        "field": "Состояние",
+        "desc": false
+       }
+      ]
+     }
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "custom": {
+      "align": "left"
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Состояние"
+      },
+      "properties": [
+       {
+        "id": "mappings",
+        "value": [
+         {
+          "type": "value",
+          "options": {
+           "1": {
+            "text": "● открыт",
+            "color": "green",
+            "index": 0
+           },
+           "0": {
+            "text": "● закрыт",
+            "color": "red",
+            "index": 1
+           }
+          }
+         }
+        ]
+       },
+       {
+        "id": "custom.cellOptions",
+        "value": {
+         "type": "color-text"
+        }
+       },
+       {
+        "id": "custom.width",
+        "value": 110
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Страна"
+      },
+      "properties": [
+       {
+        "id": "mappings",
+        "value": [
+         {
+          "type": "value",
+          "options": {
+           "RU": {
+            "text": "🇷🇺 RU",
+            "index": 0
+           },
+           "DE": {
+            "text": "🇩🇪 DE",
+            "index": 1
+           },
+           "NL": {
+            "text": "🇳🇱 NL",
+            "index": 2
+           },
+           "FI": {
+            "text": "🇫🇮 FI",
+            "index": 3
+           },
+           "FR": {
+            "text": "🇫🇷 FR",
+            "index": 4
+           },
+           "CH": {
+            "text": "🇨🇭 CH",
+            "index": 5
+           },
+           "SE": {
+            "text": "🇸🇪 SE",
+            "index": 6
+           },
+           "US": {
+            "text": "🇺🇸 US",
+            "index": 7
+           },
+           "PL": {
+            "text": "🇵🇱 PL",
+            "index": 8
+           },
+           "ES": {
+            "text": "🇪🇸 ES",
+            "index": 9
+           },
+           "BG": {
+            "text": "🇧🇬 BG",
+            "index": 10
+           },
+           "GR": {
+            "text": "🇬🇷 GR",
+            "index": 11
+           },
+           "LV": {
+            "text": "🇱🇻 LV",
+            "index": 12
+           },
+           "CZ": {
+            "text": "🇨🇿 CZ",
+            "index": 13
+           },
+           "GB": {
+            "text": "🇬🇧 GB",
+            "index": 14
+           },
+           "IT": {
+            "text": "🇮🇹 IT",
+            "index": 15
+           },
+           "TR": {
+            "text": "🇹🇷 TR",
+            "index": 16
+           },
+           "KZ": {
+            "text": "🇰🇿 KZ",
+            "index": 17
+           },
+           "AM": {
+            "text": "🇦🇲 AM",
+            "index": 18
+           },
+           "GE": {
+            "text": "🇬🇪 GE",
+            "index": 19
+           },
+           "AT": {
+            "text": "🇦🇹 AT",
+            "index": 20
+           },
+           "EE": {
+            "text": "🇪🇪 EE",
+            "index": 21
+           },
+           "LT": {
+            "text": "🇱🇹 LT",
+            "index": 22
+           },
+           "RO": {
+            "text": "🇷🇴 RO",
+            "index": 23
+           },
+           "HU": {
+            "text": "🇭🇺 HU",
+            "index": 24
+           },
+           "JP": {
+            "text": "🇯🇵 JP",
+            "index": 25
+           },
+           "SG": {
+            "text": "🇸🇬 SG",
+            "index": 26
+           },
+           "CA": {
+            "text": "🇨🇦 CA",
+            "index": 27
+           },
+           "UA": {
+            "text": "🇺🇦 UA",
+            "index": 28
+           },
+           "MD": {
+            "text": "🇲🇩 MD",
+            "index": 29
+           },
+           "RS": {
+            "text": "🇷🇸 RS",
+            "index": 30
+           },
+           "HK": {
+            "text": "🇭🇰 HK",
+            "index": 31
+           },
+           "AE": {
+            "text": "🇦🇪 AE",
+            "index": 32
+           },
+           "IN": {
+            "text": "🇮🇳 IN",
+            "index": 33
+           },
+           "BR": {
+            "text": "🇧🇷 BR",
+            "index": 34
+           }
+          }
+         }
+        ]
+       },
+       {
+        "id": "custom.width",
+        "value": 90
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "cellHeight": "sm",
+    "footer": {
+     "show": false
+    }
+   }
+  },
+  {
+   "id": 19,
+   "type": "table",
+   "title": "📦 Трафик интерфейса за 24 часа (как считает хостер)",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 39,
+    "w": 12,
+    "h": 9
+   },
+   "description": "increase() по сырым счётчикам интерфейса из панели: вход и выход за последние сутки; перезагрузки учтены",
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "increase(remnawave_node_rx_bytes_total[24h])",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "legendFormat": "",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    },
+    {
+     "refId": "B",
+     "expr": "increase(remnawave_node_tx_bytes_total[24h])",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "legendFormat": "",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    }
+   ],
+   "transformations": [
+    {
+     "id": "joinByField",
+     "options": {
+      "byField": "node",
+      "mode": "outer"
+     }
+    },
+    {
+     "id": "organize",
+     "options": {
+      "excludeByName": {
+       "Time 1": true,
+       "Time 2": true,
+       "job 1": true,
+       "job 2": true,
+       "instance 1": true,
+       "instance 2": true,
+       "role 1": true,
+       "role 2": true,
+       "country 2": true
+      },
+      "renameByName": {
+       "node": "Нода",
+       "country 1": "Страна",
+       "Value #A": "⬇️ за сутки",
+       "Value #B": "⬆️ за сутки"
+      },
+      "indexByName": {
+       "node": 0,
+       "country 1": 1,
+       "Value #A": 2,
+       "Value #B": 3
+      }
+     }
+    },
+    {
+     "id": "sortBy",
+     "options": {
+      "sort": [
+       {
+        "field": "⬇️ за сутки",
+        "desc": true
+       }
+      ]
+     }
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "custom": {
+      "align": "left"
+     },
+     "unit": "bytes",
+     "decimals": 2
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Страна"
+      },
+      "properties": [
+       {
+        "id": "mappings",
+        "value": [
+         {
+          "type": "value",
+          "options": {
+           "RU": {
+            "text": "🇷🇺 RU",
+            "index": 0
+           },
+           "DE": {
+            "text": "🇩🇪 DE",
+            "index": 1
+           },
+           "NL": {
+            "text": "🇳🇱 NL",
+            "index": 2
+           },
+           "FI": {
+            "text": "🇫🇮 FI",
+            "index": 3
+           },
+           "FR": {
+            "text": "🇫🇷 FR",
+            "index": 4
+           },
+           "CH": {
+            "text": "🇨🇭 CH",
+            "index": 5
+           },
+           "SE": {
+            "text": "🇸🇪 SE",
+            "index": 6
+           },
+           "US": {
+            "text": "🇺🇸 US",
+            "index": 7
+           },
+           "PL": {
+            "text": "🇵🇱 PL",
+            "index": 8
+           },
+           "ES": {
+            "text": "🇪🇸 ES",
+            "index": 9
+           },
+           "BG": {
+            "text": "🇧🇬 BG",
+            "index": 10
+           },
+           "GR": {
+            "text": "🇬🇷 GR",
+            "index": 11
+           },
+           "LV": {
+            "text": "🇱🇻 LV",
+            "index": 12
+           },
+           "CZ": {
+            "text": "🇨🇿 CZ",
+            "index": 13
+           },
+           "GB": {
+            "text": "🇬🇧 GB",
+            "index": 14
+           },
+           "IT": {
+            "text": "🇮🇹 IT",
+            "index": 15
+           },
+           "TR": {
+            "text": "🇹🇷 TR",
+            "index": 16
+           },
+           "KZ": {
+            "text": "🇰🇿 KZ",
+            "index": 17
+           },
+           "AM": {
+            "text": "🇦🇲 AM",
+            "index": 18
+           },
+           "GE": {
+            "text": "🇬🇪 GE",
+            "index": 19
+           },
+           "AT": {
+            "text": "🇦🇹 AT",
+            "index": 20
+           },
+           "EE": {
+            "text": "🇪🇪 EE",
+            "index": 21
+           },
+           "LT": {
+            "text": "🇱🇹 LT",
+            "index": 22
+           },
+           "RO": {
+            "text": "🇷🇴 RO",
+            "index": 23
+           },
+           "HU": {
+            "text": "🇭🇺 HU",
+            "index": 24
+           },
+           "JP": {
+            "text": "🇯🇵 JP",
+            "index": 25
+           },
+           "SG": {
+            "text": "🇸🇬 SG",
+            "index": 26
+           },
+           "CA": {
+            "text": "🇨🇦 CA",
+            "index": 27
+           },
+           "UA": {
+            "text": "🇺🇦 UA",
+            "index": 28
+           },
+           "MD": {
+            "text": "🇲🇩 MD",
+            "index": 29
+           },
+           "RS": {
+            "text": "🇷🇸 RS",
+            "index": 30
+           },
+           "HK": {
+            "text": "🇭🇰 HK",
+            "index": 31
+           },
+           "AE": {
+            "text": "🇦🇪 AE",
+            "index": 32
+           },
+           "IN": {
+            "text": "🇮🇳 IN",
+            "index": 33
+           },
+           "BR": {
+            "text": "🇧🇷 BR",
+            "index": 34
+           }
+          }
+         }
+        ]
+       },
+       {
+        "id": "custom.width",
+        "value": 90
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "cellHeight": "sm",
+    "footer": {
+     "show": false
+    }
+   }
+  }
+ ],
+ "templating": {
+  "list": []
+ },
+ "annotations": {
+  "list": []
+ },
+ "links": [
+  {
+   "title": "Нода подробно",
+   "type": "dashboards",
+   "tags": [
+    "remnawave-node"
+   ],
+   "asDropdown": false,
+   "icon": "external link",
+   "includeVars": false,
+   "keepTime": true
+  }
+ ]
+}

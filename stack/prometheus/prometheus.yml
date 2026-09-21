@@ -1,0 +1,57 @@
+# Prometheus: что и как часто опрашивать. Цели нод — в targets/*.yml (их генерирует
+# `remnawave-monitoring targets` из списка нод панели; файлы перечитываются на лету).
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+        labels: {node: "monitoring"}
+
+  # Экспортёр панели: юзеры, онлайн, ноды, трафик, скорость — всё, что знает панель
+  - job_name: remnawave
+    static_configs:
+      - targets: ["exporter:9200"]
+
+  # node-exporter: сервер мониторинга (внутри стека) + ноды из targets/nodes.yml
+  - job_name: node
+    static_configs:
+      - targets: ["node-exporter:9100"]
+        labels: {node: "monitoring", role: "monitoring"}
+    file_sd_configs:
+      - files: ["/etc/prometheus/targets/nodes.yml"]
+        refresh_interval: 1m
+
+  # blackbox: TCP-порт каждой ноды открыт? (targets/blackbox.yml)
+  - job_name: blackbox-tcp
+    metrics_path: /probe
+    params:
+      module: [tcp_connect]
+    file_sd_configs:
+      - files: ["/etc/prometheus/targets/blackbox.yml"]
+        refresh_interval: 1m
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox:9115
+
+  # blackbox: панель и страница подписки отвечают по HTTPS? (targets/http.yml)
+  - job_name: blackbox-http
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    file_sd_configs:
+      - files: ["/etc/prometheus/targets/http.yml"]
+        refresh_interval: 1m
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox:9115

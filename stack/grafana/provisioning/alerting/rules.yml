@@ -1,0 +1,318 @@
+# Правила тревог Grafana (file provisioning — в интерфейсе они только для чтения).
+# Куда слать — в telegram.yml (создаёт мастер, если задан токен). Без него тревоги видны только в Grafana.
+# $labels/$values в аннотациях — шаблоны Grafana. В аннотации правил Grafana переменные окружения
+# не подставляет (в отличие от contact points, где литеральный $ пишется как $$).
+apiVersion: 1
+groups:
+  - orgId: 1
+    name: remnawave
+    folder: Remnawave
+    interval: 1m
+    rules:
+      - uid: rw-node-down
+        title: Нода отвалилась от панели
+        condition: C
+        for: 3m
+        noDataState: OK
+        execErrState: Error
+        labels: {severity: critical}
+        annotations:
+          summary: "{{ $labels.node }} ({{ $labels.country }}) не на связи с панелью 3 минуты"
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              refId: A
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              expr: remnawave_node_connected == 0 and remnawave_node_disabled == 0
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: {type: lt, params: [1]}
+
+      - uid: rw-traffic-80
+        title: Трафик ноды ≥ 80% лимита в панели
+        condition: C
+        for: 5m
+        noDataState: OK
+        execErrState: Error
+        labels: {severity: warning}
+        annotations:
+          summary: "{{ $labels.node }}: {{ printf \"%.0f\" $values.A.Value }}% лимита трафика, заданного в панели"
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              refId: A
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              expr: remnawave_node_traffic_used_percent
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: {type: gt, params: [80]}
+
+      - uid: rw-load-high
+        title: Нода перегружена (load на ядро > 0.9 по данным панели)
+        condition: C
+        for: 15m
+        noDataState: OK
+        execErrState: Error
+        labels: {severity: warning}
+        annotations:
+          summary: "{{ $labels.node }}: load1 на ядро {{ printf \"%.2f\" $values.A.Value }} 15 минут — тесно по CPU, пора разгружать"
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              refId: A
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              expr: remnawave_node_load1 / remnawave_node_cpus > 0
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: {type: gt, params: [0.9]}
+
+      - uid: rw-cpu-high
+        title: CPU сервера > 85% (агент)
+        condition: C
+        for: 10m
+        noDataState: OK
+        execErrState: Error
+        labels: {severity: warning}
+        annotations:
+          summary: "{{ $labels.node }}: CPU {{ printf \"%.0f\" $values.A.Value }}% 10 минут (node-exporter)"
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              refId: A
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              expr: 100 - avg by (node) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: {type: gt, params: [85]}
+
+      - uid: rw-disk-low
+        title: Диск / почти полон (< 10% свободно)
+        condition: C
+        for: 5m
+        noDataState: OK
+        execErrState: Error
+        labels: {severity: warning}
+        annotations:
+          summary: "{{ $labels.node }}: на / свободно {{ printf \"%.1f\" $values.A.Value }}% — логи/журнал/apt-кэш, см. faq"
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              refId: A
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              expr: node_filesystem_avail_bytes{mountpoint="/",fstype!~"tmpfs|overlay"} / node_filesystem_size_bytes{mountpoint="/",fstype!~"tmpfs|overlay"} * 100
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: {type: lt, params: [10]}
+
+      - uid: rw-memory-low
+        title: Память сервера почти кончилась (< 10% доступно)
+        condition: C
+        for: 10m
+        noDataState: OK
+        execErrState: Error
+        labels: {severity: warning}
+        annotations:
+          summary: "{{ $labels.node }}: доступно {{ printf \"%.0f\" $values.A.Value }}% памяти 10 минут"
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              refId: A
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: {type: lt, params: [10]}
+
+      - uid: rw-conntrack-high
+        title: Таблица conntrack заполнена > 80%
+        condition: C
+        for: 5m
+        noDataState: OK
+        execErrState: Error
+        labels: {severity: warning}
+        annotations:
+          summary: "{{ $labels.node }}: conntrack {{ printf \"%.0f\" $values.A.Value }}% — при 100% новые соединения отбрасываются; поднять nf_conntrack_max"
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              refId: A
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              expr: node_nf_conntrack_entries / node_nf_conntrack_entries_limit * 100
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: {type: gt, params: [80]}
+
+      - uid: rw-port-down
+        title: Порт ноды не отвечает
+        condition: C
+        for: 3m
+        noDataState: OK
+        execErrState: Error
+        labels: {severity: critical}
+        annotations:
+          summary: "{{ $labels.node }}: {{ $labels.instance }} не принимает TCP-соединения с сервера мониторинга 3 минуты"
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              refId: A
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              expr: probe_success{job="blackbox-tcp"}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: {type: lt, params: [1]}
+
+      - uid: rw-http-down
+        title: Панель или страница подписки не отвечает
+        condition: C
+        for: 2m
+        noDataState: OK
+        execErrState: Error
+        labels: {severity: critical}
+        annotations:
+          summary: "{{ $labels.check }}: {{ $labels.instance }} не отвечает по HTTPS 2 минуты"
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              refId: A
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              expr: probe_success{job="blackbox-http"}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: {type: lt, params: [1]}
+
+      - uid: rw-agent-down
+        title: Агент ноды (node-exporter) не отвечает
+        condition: C
+        for: 5m
+        noDataState: OK
+        execErrState: Error
+        labels: {severity: warning}
+        annotations:
+          summary: "{{ $labels.node }}: node-exporter {{ $labels.instance }} недоступен 5 минут — сервер лежит или порт 9100 закрыт для сервера мониторинга"
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              refId: A
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              expr: up{job="node"}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: {type: lt, params: [1]}
+
+      - uid: rw-exporter-down
+        title: Экспортёр не может опросить панель
+        condition: C
+        for: 5m
+        noDataState: Alerting
+        execErrState: Error
+        labels: {severity: warning}
+        annotations:
+          summary: "Экспортёр 5 минут не получает данные панели: панель лежит, токен отозван или сеть; docker logs rwmon-exporter"
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: prometheus
+            model:
+              refId: A
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              expr: min(remnawave_exporter_up) or vector(0)
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: {type: lt, params: [1]}

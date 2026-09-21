@@ -1,0 +1,4 @@
+# HTTPS-проверки: панель, страница подписки. Генерируется `remnawave-monitoring targets`.
+# - targets: ["https://panel.example.com"]
+#   labels: {node: "panel", check: "panel"}
+[]

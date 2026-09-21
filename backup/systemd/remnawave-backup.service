@@ -1,0 +1,10 @@
+[Unit]
+Description=remnawave-backup — ночной зашифрованный бэкап панели/мониторинга
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/remnawave-backup/run.sh
+Nice=10
+IOSchedulingClass=idle

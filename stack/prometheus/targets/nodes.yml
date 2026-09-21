@@ -1,0 +1,5 @@
+# node-exporter на нодах (порт 9100, открыт только для сервера мониторинга).
+# Генерируется командой `remnawave-monitoring targets`; можно править руками. Пример:
+# - targets: ["203.0.113.10:9100"]
+#   labels: {node: "RF-1", role: "bridge", country: "RU"}
+[]

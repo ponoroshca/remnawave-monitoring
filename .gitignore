@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+stack/.env
+stack/docker-compose.override.yml
+stack/grafana/provisioning/alerting/telegram.yml
+*.tar.age
+*.key
+.DS_Store

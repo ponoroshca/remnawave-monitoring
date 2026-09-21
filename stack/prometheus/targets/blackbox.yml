@@ -1,0 +1,4 @@
+# TCP-проверки портов нод (адрес:порт инбаунда из панели). Генерируется `remnawave-monitoring targets`.
+# - targets: ["203.0.113.10:2053"]
+#   labels: {node: "RF-1", role: "bridge", country: "RU"}
+[]

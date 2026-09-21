@@ -1,0 +1,10 @@
+[Unit]
+Description=remnawave-backup — раз в сутки (час задаёт install-backup.sh)
+
+[Timer]
+OnCalendar=*-*-* 03:30:00
+RandomizedDelaySec=10m
+Persistent=true
+
+[Install]
+WantedBy=timers.target

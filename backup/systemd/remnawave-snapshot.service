@@ -1,0 +1,6 @@
+[Unit]
+Description=remnawave-backup — снимок папки offsite (cp -al)
+
+[Service]
+Type=oneshot
+ExecStart=/opt/remnawave-backup/snapshot.sh /root/remnawave-offsite 14

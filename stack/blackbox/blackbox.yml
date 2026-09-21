@@ -1,0 +1,11 @@
+modules:
+  tcp_connect:
+    prober: tcp
+    timeout: 5s
+  http_2xx:
+    prober: http
+    timeout: 8s
+    http:
+      preferred_ip_protocol: ip4
+      follow_redirects: true
+      valid_status_codes: [200, 301, 302, 307, 308, 401, 403, 404]   # любой ответ сервера = «жив»; тревога — таймаут, отказ соединения, 5xx
