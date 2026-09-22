@@ -20,7 +20,7 @@ for u in remnawave-backup.service remnawave-backup.timer remnawave-snapshot.serv
   f="/etc/systemd/system/$u"
   if [ -f "$f" ] && ! grep -q "remnawave-backup" "$f"; then echo "СТОП: $f уже существует и это не наш юнит. Ничего не изменено."; exit 1; fi
 done
-for t in curl tar rsync; do command -v "$t" >/dev/null || { apt-get update -qq && apt-get install -y -qq "$t"; }; done
+for t in curl tar rsync; do command -v "$t" >/dev/null || { apt-get update -qq >/dev/null && apt-get install -y -qq "$t" >/dev/null 2>&1 || { echo "не удалось поставить $t"; exit 1; }; }; done
 if ! command -v age >/dev/null; then
   apt-get update -qq && apt-get install -y -qq age >/dev/null 2>&1 || { echo "не удалось поставить age из apt — https://github.com/FiloSottile/age/releases (нужны age и age-keygen в PATH)"; exit 1; }
 fi

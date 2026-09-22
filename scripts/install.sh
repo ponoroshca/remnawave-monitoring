@@ -10,9 +10,9 @@ set -euo pipefail
 OPT=/opt/remnawave-monitoring
 SRC_URL="${RWMON_SRC_URL:-https://github.com/ponoroshca/remnawave-monitoring/archive/refs/heads/main.tar.gz}"
 [ "$(id -u)" = 0 ] || { echo "нужен root (sudo)"; exit 1; }
-command -v python3 >/dev/null || { apt-get update -qq && apt-get install -y -qq python3; }
+command -v python3 >/dev/null || { echo "ставлю python3…"; apt-get update -qq >/dev/null && apt-get install -y -qq python3 >/dev/null 2>&1 || { echo "не удалось поставить python3"; exit 1; }; }
 python3 -c 'import sys; sys.exit(0 if sys.version_info >= (3, 9) else 1)' || { echo "нужен Python 3.9+"; exit 1; }
-for t in curl tar; do command -v "$t" >/dev/null || { apt-get update -qq && apt-get install -y -qq "$t"; }; done
+for t in curl tar; do command -v "$t" >/dev/null || { apt-get update -qq >/dev/null && apt-get install -y -qq "$t" >/dev/null 2>&1 || { echo "не удалось поставить $t"; exit 1; }; }; done
 
 # ── Docker ──
 if ! command -v docker >/dev/null || ! docker compose version >/dev/null 2>&1; then
@@ -21,6 +21,7 @@ if ! command -v docker >/dev/null || ! docker compose version >/dev/null 2>&1; t
   if [ -z "$ans" ] && [ -r /dev/tty ]; then read -r -p "Установить Docker сейчас? [Y/n]: " ans </dev/tty || true; fi
   case "${ans:-y}" in
     [Yy]*|1)
+      apt-get update -qq >/dev/null 2>&1 || true
       if apt-get install -y -qq docker.io docker-compose-v2 >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
         echo "  docker из репозитория дистрибутива"
       else
